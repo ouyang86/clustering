@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import random
 import numpy as np
+from collections import deque
 from scipy import linalg
 #from scipy.cluster.vq import vq, whiten, kmeans2
 from scipy.stats import norm
@@ -206,27 +207,6 @@ class Clustering(object):
         null = np.sum(clique)
         return group1, group2, out, null, w
 
-    def mod_partition(self, sub, lamb=1.0):
-        n = len(sub)
-        if self.size == n:
-            self.cluster = []
-            self.density = []
-            self.index = 0
-        if n > 1:
-            link = self.adj[np.ix_(sub,sub)].sum()
-            total = float(n*(n-1))
-            g1, g2, out, null, w = self.bi_modularity(sub, lamb)
-            adv = (out-null) / np.sum(self.degree)
-            if adv > 10**(-6):
-                self.index += adv
-                self.mod_partition(g1, lamb)
-                self.mod_partition(g2, lamb)
-            else:
-                self.density.append((n, link/total))
-                self.cluster.append(sub)
-        if n == 1:
-            self.density.append((1, 0))
-            self.cluster.append((sub))
         
     def mod_dfs_test(self, method=1, lamb=1.0):
         subnet_list = [np.arange(self.size)]
@@ -275,14 +255,13 @@ class Clustering(object):
                 self.density.append((n, link/total))
                 self.cluster.append(sub)
 
-    def mod_dfs(self, method=1, lamb=1.0):
+    def mod_dfs(self, method=1, lamb=1.0, maxiter=50000):
         subnet_list = [np.arange(self.size)]
         self.cluster = []
         self.density = []
         self.index = 0
         degree = self.adj.sum(axis=0).T
         total_degree = degree.sum()
-        #mod = self.adj - degree*degree.T/total_degree
         while subnet_list:
             sub = subnet_list.pop()
             n = len(sub)
@@ -298,8 +277,7 @@ class Clustering(object):
             clique = mod_fun(clique, degree[sub], total_degree, lamb)
             clique = LinearOperator(shape=(n,n), matvec=clique,
                                     dtype='float64')
-            w, v = eigsh(A=clique, k=1, which='LA', tol=1E-3)
-            #print n, w
+            w, v = eigsh(A=clique, k=1, which='LA', maxiter=maxiter,tol=1E-4)
             group_ind = v[:,0] > 0
             group1 = sub[group_ind]
             group2 = sub[-group_ind]
@@ -307,7 +285,6 @@ class Clustering(object):
             out = np.dot(v, (clique*v)) / 2.0
             nul = (clique*np.ones(n)).sum()
             adv = out / total_degree
-            #print adv, nul
             if adv > 10**(-6):
                 self.index += adv
                 subnet_list.append(group1)
@@ -316,48 +293,8 @@ class Clustering(object):
                 self.density.append((n, link/total))
                 self.cluster.append(sub)
 
-    def auto_dfs_test(self, method=1,error=0.025):
-        subnet_list = [np.arange(self.size)]
-        self.cluster = []
-        self.density = []
-        self.index = 0
-        total_degree = self.adj.sum()
-        while subnet_list:
-            sub = subnet_list.pop()
-            n = len(sub)
-            if n == 1:
-                self.density.append((1,0))
-                self.cluster.append((sub))
-                continue
-            clique = self[:,sub]
-            clique = clique.tocsr()
-            clique = clique[sub,:]
-            link = clique.sum()
-            density = link / float(n*(n-1))
-            p = choose_p(n, density, error)
-            clique = clique + p*sps.identity(n, format='csr')
-            clique = clique.toarray()
-            clique -= p
-            if method == 1:
-                w, v = eigsh(A=clique, k=1, which='LA')
-            elif method == 2:
-                w, v = linalg.eigh(a=clique, eigvals=((n-1),(n-1)))
-            group_ind = v[:,0] > 0
-            group1 = sub[group_ind]
-            group2 = sub[-group_ind]    
-            v = 2.0*group_ind.astype(int) - 1
-            out = np.dot(v.T, np.dot(clique, v))
-            nul = clique.sum()
-            adv = (out-nul) / total_degree
-            if adv > 10**(-6):
-                self.index += adv
-                subnet_list.append(group1)
-                subnet_list.append(group2)
-            else:
-                self.density.append((n, density))
-                self.cluster.append(sub)
 
-    def auto_dfs(self, error=0.025):
+    def auto_dfs(self, error=0.025, maxiter=50000):
         subnet_list = [np.arange(self.size)]
         self.cluster = []
         self.density = []
@@ -379,7 +316,8 @@ class Clustering(object):
             clique = clique_fun(clique, p)
             clique = LinearOperator(shape=(n,n), matvec=clique, 
                                     dtype='float64')
-            w, v = eigsh(A=clique, k=1, which='LA')
+            w, v = eigsh(A=clique, k=1, maxiter=maxiter,
+                         which='LA')
             group_ind = v[:,0] > 0
             group1 = sub[group_ind]
             group2 = sub[-group_ind]    
@@ -395,46 +333,8 @@ class Clustering(object):
                 self.density.append((n, density))
                 self.cluster.append(sub)
 
-    def dfs_test(self, p):  
-        subnet_list = [np.arange(self.size)]
-        self.cluster = []
-        self.density = []
-        self.index = 0
-        total_degree = self.adj.sum()
-        while subnet_list:
-            sub = subnet_list.pop()
-            n = len(sub)
-            if n == 1:
-                self.density.append((1,0))
-                self.cluster.append((sub))
-                continue
-            clique = self.adj.tocsc()[:,sub]
-            clique = clique.tocsr()
-            clique = clique[sub,:]
-            link = clique.sum()
-            density = link / float(n*(n-1))
-            clique = clique + p*sps.identity(n, format='csr')
-            clique = clique.toarray() - p 
-            w, v = eigsh(A=clique, k=1, which='LA')
-            group_ind = v[:,0] > 0
-            group1 = sub[group_ind]
-            group2 = sub[-group_ind]    
-            v = 2.0*group_ind.astype(int) - 1
-            out = np.dot(v.T, np.dot(clique, v))
-            nul = clique.sum()
-            adv = (out-nul) / total_degree
-            if adv > 10**(-6) or nul < 0:
-                if len(group1) == len(sub) or len(group2) == len(sub):
-                    group1 = random.sample(sub, (n/2))
-                    group2 = list(set(sub).difference(set(g1)))
-                self.index += adv
-                subnet_list.append(group1)
-                subnet_list.append(group2)
-            else:
-                self.density.append((n, density))
-                self.cluster.append(sub)
 
-    def dfs(self, p):  
+    def dfs(self, p, maxiter=50000):  
         subnet_list = [np.arange(self.size)]
         self.cluster = []
         self.density = []
@@ -455,7 +355,8 @@ class Clustering(object):
             clique = clique_fun(clique, p)
             clique = LinearOperator(shape=(n,n), matvec=clique, 
                                     dtype='float64')
-            w, v = eigsh(A=clique, k=1, which='LA')
+            w, v = eigsh(A=clique, k=1, maxiter=maxiter,
+                         which='LA')
             group_ind = v[:,0] > 0
             group1 = sub[group_ind]
             group2 = sub[-group_ind]    
@@ -1029,10 +930,10 @@ pp_kk.show()
 pp_lgl.show()
 
 #generate graph from stochastic block model
-gg = ig.Graph.SBM(n=128, pref_matrix=list(prob5), 
-                  block_sizes=list(size5))
+gg = ig.Graph.SBM(n=120, pref_matrix=list(prob1), 
+                  block_sizes=list(size1))
 
-gg = ig.Graph.Erdos_Renyi(100, 0.1)
+#gg = ig.Graph.Erdos_Renyi(100, 0.1)
 
 cc = gg.community_leading_eigenvector()
 
