@@ -10,6 +10,8 @@ from scipy.sparse.linalg import eigsh
 from scipy.sparse.linalg import LinearOperator
 from sklearn import metrics
 import igraph as ig
+from igraph.drawing.text import TextDrawer
+import cairo
 
 
 #randomly simulate a cluster in a network
@@ -119,12 +121,15 @@ def mod_fun(a, deg, total_deg, nul=True, lamb=1.0):
 #adj is the adjacency matrix in sparse matrix data structure
 class Clustering(object):
     def __init__(self, adj):
-        self.adj = adj.tocsc()
+        self.adj = sps.csc_matrix(adj)
         self.cluster = []
         self.density = []
-        self.membership = None
+        #self.membership = None
         self.size = adj.shape[0]
         self.index = 0
+        self.edgelist = None
+        self.g = None
+        self.layout = None
         
     #member is a 1D numpy array of membership assignment
     #in a clustering
@@ -268,13 +273,79 @@ class Clustering(object):
                 self.density.append((n, density))
                 self.cluster.append(sub)
    
-
+    #get membership array from clustering results
     def get_membership(self):
-        self.membership = np.zeros(self.size)
+        membership = np.zeros(self.size, dtype=int)
         for i, cluster in enumerate(self.cluster):
             for node in cluster:
-                self.membership[node] = i
+                membership[node] = i
+        return membership
+                
+    
+    #get edgelist from csc sparse adjacency matrix
+    def get_edgelist(self, directed=False):
+        if self.adj.nnz == 0:
+            return None
+        edgelist = []
+        cur_col = 0
+        for ind, item in enumerate(self.adj.indices):
+            if ind >= self.adj.indptr[cur_col+1]:
+                cur_col += 1
+            if directed or item <= cur_col:
+                edgelist.append((item, cur_col))
+        return edgelist
+                
+    #make a plot for the graph
+    """
+    If membership is None, the self.cluster will be used for
+    membership information. Otherwise, membership is used
+    If infile is None, plot will not be written to hard drive
+    We can specify the path
+    
+    """
+    def plot_network(self, title, membership=None, outfile=None,
+                     width=600, height=600):
+        if self.edgelist is None:
+            self.edgelist = self.get_edgelist()
+        if self.g is None:
+            self.g = ig.Graph(self.edgelist)
+        if membership is None:
+            membership = self.get_membership()
+            pal_size = max(1, len(self.cluster))   
+        else:
+            temp = set()
+            for item in membership:
+                temp.add(item)
+            pal_size = max(1, len(temp))
+        pal = ig.ClusterColoringPalette(pal_size)
+        visual_style = {}
+        visual_style['vertex_color'] = [pal.get(id) \
+                                        for id in membership]
+        if self.size <= 100:
+            visual_style['vertex_size'] = 20
+            visual_style['vertex_label'] = [str(id+1) \
+                                            for id in xrange(self.size)]
+        else:
+            visual_style['vertex_size'] = 8
+        if not self.layout:
+            if self.size <= 200:
+                self.layout = self.g.layout('kk')
+            else:
+                self.layout = self.g.layout('lgl') 
+        visual_style['margin'] = (20,50,20,20)
+        visual_style['layout'] = self.layout
+        visual_style['bbox'] = (width, height)
+        figure = ig.plot(self.g, **visual_style)
+        figure.redraw()
+        ctx = cairo.Context(figure.surface)
+        ctx.set_font_size(20)
+        drawer = TextDrawer(ctx, title, halign=TextDrawer.CENTER)
+        drawer.draw_at(3,30, width=width)
+        if outfile:
+            figure.save(outfile)
+        figure.show()
         
+                    
  
 
 #test the probability to split a ER random network
@@ -360,7 +431,7 @@ def get_sbm_cluster(size):
     current = 0
     for i in range(k):
         follow = current + size[i]
-        cluster.append(range(current, follow))
+        cluster.append(np.arange(current, follow))
         current = follow
     return cluster
 
@@ -374,17 +445,21 @@ def dict_cluster(cluster):
     return out
 
 
-#create a label of clustering results
+#create a membership array of clustering results
 #from a list of clusters
-def label_cluster(net_size, cluster):
-    out = np.zeros(net_size)
+def label_cluster(cluster, net_size=None):
+    if not net_size:
+        net_size = 0
+        for item in cluster:
+            net_size += item.shape[0]
+    out = np.zeros(net_size, dtype=int)
     for i, item in enumerate(cluster):
         for node in item:
             out[node] = i
     return out
 
 
-#create a label list from an array of clustering labels
+#create a label list from a membership array
 #the inverse function of label_cluster
 def list_cluster(label):
     out = dict()
@@ -586,6 +661,25 @@ def my_nmi_alt(labels_true, labels_pred, version=0):
         return numerator/np.sqrt(d1*d2)
     
 
+def read_mcmc(infile, delimiter=','):
+    result = []
+    row = 0
+    with open(infile, 'rb') as f:
+        for line in f:
+            if row == 0:
+                row += 1
+                continue
+            line = line.strip()
+            entries = line.split(delimiter)
+            weight = entries[2]
+            if row % 2 == 1:
+                check = [weight]
+            elif row % 2 == 0:
+                check.append(weight)
+                result.append(check.index(max(check)))
+            row += 1
+    return np.array(result)
+    
     
 size0 = np.array([100])
 prob0 = np.array([[0.1]])
@@ -760,12 +854,27 @@ gg.vs['color'] = [color_dict[id] for id in cluster_lab]
 gg.vs['size'] = 8
 lay_fr = gg.layout('fr')
 pp_fr = ig.plot(gg, layout=lay_fr)
+pp_fr.show()
+
 lay_kk = gg.layout('kk')
 pp_kk = ig.plot(gg, layout=lay_kk)
+
 lay_lgl = gg.layout('lgl')
 pp_lgl = ig.plot(gg, layout=lay_lgl)
+pp_lgl.show()
 
-pp_fr.show()
+g.vs['size'] = 20
+g.vs['color'] = [color_list[id] for id in cd.membership]
+lay_kk = g.layout('kk')
+
+pp_kk = ig.plot(g, target='haha.pdf',margin=(20,50,20,20), layout=lay_kk)
+pp_kk.redraw()
+ctx = cairo.Context(pp_kk.surface)
+ctx.set_font_size(20)
+drawer = TextDrawer(ctx, "Test title", halign=TextDrawer.CENTER)
+drawer.draw_at(3, 30, width=600)
+pp_kk.show()
+
 pp_kk.show()
 pp_lgl.show()
 
@@ -793,5 +902,11 @@ pp_lgl = ig.plot(gg, layout=lay_lgl)
 pp_fr.show()
 pp_kk.show()
 pp_lgl.show()
+ 
+ 
+ 
+lay_kk = g.layout('kk')
+pp_kk = ig.plot(g, layout=lay_kk)
+pp_kk.show()
     
     
