@@ -1,0 +1,486 @@
+#(1.1)
+\mathrm{log}(p_{ij}/(1-p_{ij}))=\beta_0^{T}x_{i,j}- \beta_1\left | z_i-z_j \right | , \hspace{100pt}(1.1)
+
+#(1.2)
+z_i \sim \sum_{k=1}^h \lambda_k \mathrm{MVN_d}(\mu_k, \sigma_k^2I_d) \hspace{120pt}(1.2)
+
+#(1.2)+1
+\sqrt{\frac{1}{n}\sum_{i=1}^n\left \| z_i \right \|_2^2}=1,
+
+#(1.3)
+c(i) \sim \mathrm{Multinomial}(\pi_i), \hspace{120pt}(1.3)
+
+#(1.4)
+\pi_i \sim \mathrm{Dirichlet}(\alpha),\hspace{140pt} (1.4)
+
+#(1.5)
+I(T,S)= \frac{-2\sum_{k=1}^{C_T}\sum_{l=1}^{C_S}N_{kl}\mathrm{log(\frac{N_{kl}N_{..}}{N_{k.}N_{.l}})}}{\sum_{k=1}^{C_T}N_{k.}\mathrm{log}(\frac{N_{k.}}{N_{..}})+\sum_{l=1}^{C_S}N_{.l}\mathrm{log(\frac{N_{.l}}{N_{..}})}}, \hspace{60pt}(1.5)
+
+#(2.1)
+A = ((a_{ij})), \hspace{140pt}(2.1)
+
+#(2.2)
+dist(g)=J^{(n)}-A^{(n)}, \hspace{130pt}(2.2)
+
+#(2.3)
+P(A_{ij}=1)=p, \hspace{140pt}(2.3)
+
+#(2.4)
+\hat{p}=\frac{M}{n(n-1)}. \hspace{140pt}(2.4)
+
+#(2.5)
+P(deg(v)=k)=\binom{n-1}{k}p^k(1-p)^{n-k-1}. \hspace{80pt}(2.5)
+
+#(2.6)
+P(deg(v)=k) \rightarrow \frac{(np)^k e^{-np}}{k!} . \hspace{100pt} (2.6)
+
+#(2.7)
+P(deg(v)=k) \sim k^{-\gamma}, \hspace{130pt} (2.7)
+
+#(2.8)
+P(c(v)=k) = \theta_{k}, \hspace{130pt} (2.8)
+
+#(2.9)
+P(A_{ij}=1|c(i),c(j)) = B_{ij}, \hspace{110pt}(2.9)
+
+#(2.9) +1
+A_{ij}^{(new)} = \max(A_{ij}, A_{ji}), \forall \hspace{5pt}1 \leq i, j \leq n.
+
+#(2.10)
+P(A,c;\theta,B)=\theta_1^{n_1} \ldots \theta_h^{n_h}\prod_{1 \leq k \leq l \leq h}B_{kl}^{e_{kl}}(1-B_{kl})^{n_{kl}-e_{kl}}, \hspace{40pt}(2.10) 
+
+#(2.11)
+e_{kl}=\frac{1}{1+\delta_{kl}}\sum_{1 \leq i \ne j \leq n} a_{ij}I(c(i)=k)I(c(j)=l)
+
+#(2.12)
+n_{kl}=\begin{cases}
+ n_kn_l & \text{, if } k \ne l \\ 
+ \binom{n_k}{2}& \text{,  if } k=l 
+\end{cases}
+
+#(2.13)
+n_k=\sum_{i=1}^nI(c(i)=k)
+
+#(2.14)
+\delta_{kl}=\begin{cases} 
+1 &, \text{ if }k = l \\
+0 &,  \text{ if } k \ne l
+\end{cases}
+
+
+#(2.15)
+P(A;\theta,B) = \sum_{c}P(A,c;\theta,B). \hspace{100pt}(2.15)
+
+#(2.16)
+P(c|A) \propto \int P(A,c|\theta, B)f(\theta, B)d\theta dB. \hspace{90pt}(2.16)
+
+#(2.17)
+\underset{1 \leq k \leq h}{\mathrm{argmax}}\hspace{2pt}P(c(i)=k), \hspace{120pt}(2.17)
+
+#(2.17) +1
+\begin{align} 
+\mathrm{similarity} & = \cos (x,y) = \frac{x^Ty}{\left \| x \right \|_2 \left \| y \right \|_2} \nonumber \\
+                   & = \frac{\sum_{i=1}^r x_i y_i}{\sqrt{\sum_{i=1}^r x_i^2} \sqrt{\sum_{i=1}^r y_i^2}} \nonumber
+
+\end{align}
+
+#(2.18)
+Z_i=(Z_{i1},Z_{i2},\ldots,Z_{ih})^T, \hspace{115pt}(2.18)
+
+
+#(2.19)
+P(A_{ij}=a_{ij}|Z_i,Z_j)=(\frac{Z_{i}^{T}Z_{j}}{\left \| Z_i \right \|_2 \left \| Z_j \right \|_2})^{a_{ij}}(1-\frac{Z_{i}^{T}Z_{j}}{\left \| Z_i \right \|_2 \left \| Z_j \right \|_2})^{1-a_{ij}}\hspace{30pt}(2.19)
+
+#(2.20)
+A_{ij}|Z_{i},Z_{j}\sim \frac{Z_{i}^{T}Z_{j}}{\left \| Z_i \right \|_2 \left \| Z_j \right \|_2},\hspace{120pt}(2.20)
+
+#(2.20)+1
+\left \| Z_i \right \|_2=\sqrt{\sum_{k=1}^{h}Z_{ik}^{2}}\hspace{5pt}\text{, for } 1 \leq i \leq n,
+
+#(2.20)+2
+a_{ij}=\begin{cases}
+ & 1\text{ , if node } i \text{ and } j \text{ are connected}  \\ 
+ & 0\text{ , if node } i \text{ and } j \text{ are not connected} 
+\end{cases}.
+
+#(2.21)
+P(A=((a_{ij}))|Z)=\prod_{1 \leq i <j \leq n}(\frac{Z_{i}^{T}Z_{j}}{\left \| Z_i \right \|_2 \left \| Z_j \right \|_2})^{a_{ij}}(1-\frac{Z_{i}^{T}Z_{j}}{\left \| Z_i \right \|_2 \left \| Z_j \right \|_2})^{1-a_{ij}},\hspace{15pt}(2.21)
+
+#(2.22)
+Z_i \overset{i.i.d.}{\sim}\mathrm{Dirichlet}(\alpha),\text{  for } 1 \leq i \leq n, \hspace{95pt}(2.22)
+
+#(2.23)
+Z_{-i}=(Z_1,...,Z_{i-1},Z_{i+1},...,Z_n) \hspace{110pt}(2.23)
+
+#(2.24)
+\begin{array} {lcl}P(Z_{i}|A, Z_{-i},\alpha)&=& \frac{P(Z,A|\alpha)}{P(Z_{-i},A|\alpha)} \\
+                    &\propto& P(A|Z,\alpha)P(Z|\alpha) 
+      \\
+                   &\propto& (\prod_{j=1,j \ne i}^n (\frac {Z_i^TZ_j}{||Z_i||_2||Z_j||_2})^{a_{ij}}(1-\frac {Z_i^TZ_j}{||Z_i||_2||Z_j||_2})^{1-a_{ij}}) \prod_{k=1}^h Z_{ik}^{\alpha_k-1} \\
+         && \hspace{250pt}(2.24)
+
+\end{array}
+
+
+\end{array}
+
+#(2.24)+algorithm input
+\text{\textbf{Input: }} burninNum = 5000 \text{, } size = 10000
+
+#(2.24)+algorithm step(1)
+\text{(1)}\hspace{1pt} \text{Initialize } Z_{ik}=\frac{1}{h} \text{ , for all }i \text{ from }1 \text{ to }n \text{ , and all } k \text{ from }1 \text{ to h}
+
+#(2.24)+algorithm step(2)
+\text{(2)}\hspace{1pt} \text{Initialize the iteration number } iterNum =1
+
+#(2.24)+algorithm step(3)
+\text{(3)}\hspace{1pt} \text{\textbf{Repeat }} 
+
+#(2.24)+algorithm step(4)
+\text{(4)}\hspace{25pt} \text{\textbf{for }} i \text{ in } 1 \text{to }n
+
+#(2.24)+algorithm step(5)
+\text{(5)}\hspace{50pt} \text{Simulate }T_i \sim \mathrm{Dirichlet}(\alpha)
+
+#(2.24)+algorithm step(6)
+\text{(6)}\hspace{50pt} \text{Simulate }u \sim \mathrm{Uniform}(0, 1)
+
+#(2.24)+algorithm step(7)
+\text{(7)}\hspace{50pt}\text{\textbf{if} } u< \frac{(\prod_{j=1,j \ne i}^n (\frac {T_i^TZ_j}{\left \| T_i \right \|_2\left \| Z_j \right \|_2})^{a_{ij}}(1-\frac {T_i^TZ_j}{\left \| T_i \right \|_2\left \| Z_j \right \|_2})^{1-a_{ij}}) \prod_{k=1}^h T_{ik}^{\alpha_k-1}}{(\prod_{j=1,j \ne i}^n (\frac {Z_i^TZ_j}{\left \| Z_i \right \|_2\left \| Z_j \right \|_2})^{a_{ij}}(1-\frac {Z_i^TZ_j}{\left \| Z_i \right \|_2\left \| Z_j \right \|_2})^{1-a_{ij}}) \prod_{k=1}^h Z_{ik}^{\alpha_k-1}}
+
+
+#(2.24)+algorithm step(8)
+\text{(8)}\hspace{75pt} \text{Set } Z_i \text{ to be } T_i
+
+#(2.24)+algorithm step(9)
+\text{(9)}\hspace{25pt} \text{\textbf{if }} iterNum > burninNum
+
+#(2.24)+algorithm step(10)
+\text{(10)}\hspace{45pt} \text{Add } Z \text{ to } posteriorSample 
+
+#(2.24)+algorithm step(11)
+\text{(11)}\hspace{20pt} \text{Increment } iterNum \text{ by } 1
+
+#(2.24)+algorithm step(12)
+\text{(12)}\hspace{1pt} \text{\textbf{Until }} iterNum > size + burninNum
+
+#(2.24)+algorithm output
+\text{\textbf{Output: }} posteriorSample
+
+#(2.25)
+c(i) = \max _{k=1,2} Z_{ik}, \hspace{135pt}(2.25)
+
+##########################################################
+#Chapter 3
+#(3.1)
+Deg=
+\begin{pmatrix}
+deg(1) &0  &.  &. &. &0\\ 
+ 0&deg(2)  &.  &. &. &0 \\ 
+ .& . &.  & & &.\\ 
+ .& . &  &. & &.\\ 
+ .& . &  &  &.&.\\ 
+ 0&0  &.  &. &. &deg(n)
+\end{pmatrix}.
+\hspace{80pt}(3.1)
+
+
+#(3.2)
+Vol(G) = \sum_{i=1}^n deg(i). \hspace{130pt}(3.2)
+
+#(3.3)
+Cut(G_1, G_2) =\frac {1}{2} \sum_{i \in G_1 ,j \in G_2}a_{ij} . \hspace{110pt}(3.3)
+
+#(3.4)
+L=Deg-A. \hspace{160pt}(3.4)
+
+#(3.5)
+L_{sym}:=Deg^{-1/2}LDeg^{-1/2}=I-Deg^{-1/2}ADeg^{-1/2}.\hspace{60pt}(3.5)
+
+#(3.6)
+c^{T}L_{sym}c=\frac{1}{2}\sum_{i,j=1}^na_{ij}(\frac{c_i}{\sqrt{deg(i)}}-\frac{c_j}{\sqrt{deg(j)}})^2. \hspace{70pt}(3.6)
+
+#(3.7)
+\begin{align} 
+  Ncut(G_1,\ldots G_h)  &= \sum_{k=1}^h \frac{Cut(G_k,\overline{G_k})}{Vol(G_k)} \nonumber      \\                     
+   
+   &= \mathrm{Tr}(P^TLP),  \hspace{120pt}(3.7) \nonumber
+\end{align}
+
+#(3.8)
+P_{ij}=\begin{cases}
+1/ \sqrt{Vol(G_j)} & \text{, if } i \in G_j \\ 
+ 0& \text{, if } i \notin G_j
+\end{cases}.
+\hspace{90pt}(3.8)
+
+#(3.9)
+\begin{array} {lcl}
+   && \underset{G_1, \ldots G_h}{\mathrm{min}} \mathrm{Tr}(P^TLP) \text{ , under } (3.8)   \\
+   &\approx& \underset{P \in \mathbb{R}^{n \times h}}{\mathrm{min}} \hspace{5pt} \mathrm{Tr}(P^TLP) \text{ , under } P^TDegP = I_h \\
+ &=&\underset{C \in \mathbb{R}^{n \times h}}{\mathrm{min}} \hspace{5pt} \mathrm{Tr}( C^TL_{sym}C) \text{ , under } C^TC = I_h, \hspace{80pt}(3.9) \\
+
+\end{array}
+
+#(3.10)
+Q=\frac{1}{Vol(G)}\sum_{1 \leq i,j \leq n} (a_{ij} - \frac {deg(i)deg(j)}{Vol(G)}) \delta(c_i, c_j), \hspace{50pt} (3.10) 
+
+#(3.11)
+\delta(c_i, c_j)=\begin{cases}
+1 & \text{, if } c_i=c_j \\ 
+0 & \text{, if } c_i \ne c_j 
+\end{cases}.
+\hspace{100pt}(3.11)
+
+#(3.12)
+s_i=\begin{cases}
+1 & \text{, if } i \in \text{Community 1} \\ 
+-1 & \text{, if } i \in \text{Community 2} 
+\end{cases}.
+\hspace{80pt}(3.12)
+
+#(3.12) +1
+\frac{s_i s_j +1}{2}=\begin{cases}
+1 & \text{, if } i,j  \text{ are in the same community} \\ 
+0 & \text{, if } i \in \text{are in different community} 
+\end{cases}.
+
+#(3.13)
+\begin{align} 
+Q &= \frac {1}{Vol(G)}\sum_{1 \leq i,j \leq n}(a_{ij}- \frac{deg(i)deg(j)}{Vol(G)})\frac{s_is_j+1}{2}  \nonumber \\
+&=\frac {1}{2Vol(G)}\sum_{1 \leq i,j \leq n}(a_{ij}-\frac{deg(i)deg(j)}{Vol(G)})s_is_j . \hspace{60pt}(3.13) \nonumber
+
+\end{align}
+
+#(3.13)+1
+\sum_{1 \leq i,j \leq n}a_{ij} = \sum_{i=1}^n deg(i) = Vol(G).
+
+#(3.14)
+Q= \frac{1}{2Vol(G)}s^TBs. \hspace{130pt} (3.14)
+
+#(3.15)
+\begin{align} 
+Q &=  \frac{1}{2Vol(G)}(\sum_{i=1}^n(u_i^Ts)u_i^T)B(\sum_{i=1}^n(u_i^Ts)u_i)                                       \nonumber \\
+&= \frac{1}{2Vol(G)} \sum_{i=1}^n(u_i^Ts)^2 \beta_i  , \hspace{140pt}(3.15)  \nonumber
+\end{align}
+
+#(3.15) + algorithm input
+\textbf{Input: } \text{Network } G \text{ with modularity matrix } B
+
+#(3.15) + algorithm name
+\mathrm{DivideIntoTwo}(B):
+
+#(3.15) + step 1
+\text{(1)}\hspace{1pt} \textbf{if }G \text{ needs to be divided into }G_1 \text{ and }G_2
+
+#(3.15) + step 2
+\text{(2)}\hspace{25pt} \text{let }B^{(G_1)} \text{ to be submatrix of }B \text{ with index in }G_1
+
+#(3.15) + step 3
+\text{(3)}\hspace{25pt} \text{let }B^{(G_2)} \text{ to be submatrix of }B \text{ with index in }G_2
+
+#(3.15) + step 4
+\text{(4)}\hspace{25pt} \mathrm{DivideIntoTwo}(B^{(G_1)})
+
+#(3.15) + algorithm step(1)
+\text{(1)}\hspace{1pt}\text{compute the eigenvector } s \text{ of } C \text{ with largest eigenvalue} 
+
+#(3.15) + algorithm step(2)
+\text{(2)}\hspace{1pt} \text{ split } G \text{ into } G_1,G_2 \text{ by sign of }s
+#(3.15) + step 5
+\text{(5)}\hspace{25pt} \mathrm{DivideIntoTwo}(B^{(G_2)})
+
+#(3.15) + step 6
+\text{(6)}\hspace{1pt} \textbf{else } G \text{ needs not to be further divided}
+
+#(3.15) + step 7
+\text{(7)}\hspace{25pt} \text{add } G \text{ into output list } K
+
+#(3.15) + output
+\textbf{Output: } \text{A list of found communities }K=[G_1,\ldots,G_h].
+
+#(3.16)
+\begin{align} 
+\Delta Q &=Q_{split} -Q_{original} \nonumber \\
+ &=\frac {1}{Vol(G)}\sum_{i,j \in G}(\frac{b_{ij}(s_is_j+1)}{2}-b_{ij}) \nonumber \\
+ &=\frac {1}{2Vol(G)}s^TB^{(G)}s ,\hspace{140pt}(3.16)      \nonumber
+\end{align}
+
+#(3.17)
+b_{ij}^{(G)}=b_{ij}-\delta(i,j)\sum_{j \in G}b_{ij} , \hspace{120pt}(3.17)
+
+#(3.18)
+Q_{\lambda}=\frac{1}{Vol(G)}\sum_{1 \leq i,j \leq n}(a_{ij}-\lambda\frac{deg(i)deg(j)}{Vol(G)})\delta(c_i,c_j), \hspace{40pt} (3.18)
+
+#(3.19)
+\begin{align}
+D(c) &= \frac{1}{n(n-1)}(\sum_{k=1}^h(\mathrm{Vol}(G_k)-\frac{p(n_k-1)n_k}{2})+\sum_{1 \leq k \ne l \leq h}(pn_k n_l - \mathrm{Vol}(G_k, G_l))) \nonumber \\
+     &=\frac{1}{n(n-1)}\sum_{1 \leq i \ne j \leq n}((a_{ij}-p)\delta(c_i,c_j)+(p-a_{ij})(1-\delta(c_i, c_j))). \hspace{25pt}(3.19) \nonumber
+ \end{align}
+ 
+
+#(3.20)
+\begin{align} 
+D(s) &=\frac{1}{n(n-1)}\sum_{1 \leq i \ne j \leq n}(a_{ij}-1)s_is_j \nonumber \\ 
+&=\frac{1}{n(n-1)}s^TCs , \hspace{145pt}(3.20) \nonumber
+\end{align}
+
+#(3.21)
+\begin{align} 
+\underset{s}{\mathrm{max}}(D(s)-D(1_n)) &= \underset{s}{\mathrm{max}}(s^TCs-1_n^TC1_n) \nonumber \\
+&=\frac{1}{n(n-1)} \underset{s}{\mathrm{max}} (s^T(C-(\frac{1}{n}\sum_{i,j=1}^nC_{ij})I_n)s) \nonumber \\
+&=\frac{1}{n(n-1)}\underset{s}{\mathrm{max}} (s^TC^{(0)}s),\hspace{80pt}(3.21) \nonumber
+\end{align}
+
+#(3.21)+1
+\begin{align}
+D(c) &= \frac{1}{n(n-1)}\sum_{1 \leq i,j \leq n}(-a_{ij}+1) \nonumber \\
+     &= -D(1_n)\geq 0 \geq D(1_n) \nonumber
+\end{align}
+
+#(3.21)+algorithm
+\textbf{Input: } \text{p-clique matrix }C=A-p(J_n-I_n) \text{ network } G
+
+#(3.21)+algorithm name
+\mathrm{DivideIntoTwo}(G,C):
+
+#(3.21)+algorithm step(1)
+\text{(1) compute the eigenvector } s \text{ of }C \text{ with largest eigenvalue}
+
+#(3.21)+algorithm step(2)
+\text{(2) split } G \text{ into } G_1, G_2 \text{ by sign of }s 
+
+#(3.21)+algorithm step(3)
+\text{(3) Compute the additional contribution } \Delta D \text{ to p-clique index from above split of }G
+
+#(3.21)+algorithm step(4)
+\text{(4) }\textbf{if } \Delta D > 0 \text{ or } \sum_{i,j \in G} C_{ij} <0
+
+#(3.21)+algorithm step(5)
+\text{(5)} \hspace{25pt} \mathrm{DivideIntoTwo}(G_1, C^{(G_1)}) 
+
+#(3.21)+algorithm step(6)
+\text{(5)} \hspace{25pt} \mathrm{DivideIntoTwo}(G_2, C^{(G_2)}) 
+
+#(3.21)+algorithm step(7)
+\text{(4) }\textbf{if } \Delta D \geq 0 \text{ or } \sum_{i,j \in G} C_{ij} \leq 0
+
+#(3.21)+algorithm step(8)
+\text{(8)} \hspace{25pt} \text{add } G \text{ to cluster list } K
+
+#(3.21)+algorithm output
+\textbf{Output: } \text{a list of clusters }K=[G_1,\ldots,G_h].
+
+#(3.22)
+\begin{align}
+\Delta D &= D(c_{split}) - D(c_{current}) \nonumber \\
+&= \frac{1}{n(n-1)} \sum_{i,j \in G} ((a_{ij}-p)\delta(c_i,c_j)+ (p-a_{ij})(1- \delta(c_i,c_j))) \nonumber \\
+& \hspace{15pt}- \frac{\sum_{i,j \in G} (a_{ij}-p)}{n(n-1)} \nonumber \\
+&= \frac{1}{n(n-1)} \sum_{i,j \in G} (s_i C_{ij}^{(G)} s_j - C_{ij}^{(G)}), \hspace{120pt} (3.22) \nonumber 
+\end{align}
+
+#(3.22)+1
+s_{is}=\begin{cases} 
+1 &\text{, if } \beta_i^{(G)} \geq 0 \\
+0 &\text{, if } \beta_i^{(G)} <0
+\end{cases}.
+
+#(3.22)+2
+a_{ij}=\begin{cases} 
+a_{ji} &\text{, if } j <i \\
+1 &\text{, if } j =i
+\end{cases}.
+
+#(3.23)
+error= \sum_{1 \leq i \ne j \leq n}\frac{\left | E_{ij}^{(1)} -E_{ij}^{(2)} \right |}{n(n-1)} \hspace{100pt}(3.23)
+
+#(3.24)
+P_{kl}= \sum_{i \ne j, i \in k, j\in l}\frac{\left | E_{ij}^{(1)} -E_{ij}^{(2)} \right |}{f_{kl}}, \hspace{100pt}(3.24)
+
+#(3.24)+1
+f_{kl}=\begin{cases} 
+n_k n_l & \text{, if }k \ne l \\
+n_k(n_k-1) & \text{, if } k = l
+\end{cases}
+
+
+#(4.1)
+\begin{align}
+E(X,\alpha) &=p_0 - \frac{\phi(z_{\alpha})}{1-\alpha}\sqrt{\frac{p_0(1-p_0)}{(1-\alpha)(n-1)}} \nonumber \\
+ & \overset{\alpha=0.025}{=} p_0-0.06 \sqrt{\frac{p_0(1-p_0)}{0.975(n-1)}}, \hspace{90pt}(4.1) \nonumber
+
+\end{align}
+
+#(4.2)
+\begin{align} 
+Var(X, \alpha) &= \frac{p_0(1-p_0)}{(1-\alpha)(n-1)} \nonumber \\
+       & \overset{\alpha=0.025}{=} \frac{p_0(1-p_0)}{0.975(n-1)}, \hspace{100pt}(4.2) \nonumber
+\end{align}
+
+#(4.3)
+\begin{align} 
+p(\alpha) &= \mathrm{max}(0, E(X)-z_\alpha\sqrt{Var(X)}) \nonumber \\
+  & \overset{\alpha=0.025}{=} \mathrm{max}(0, p_0-2.02 \sqrt{\frac{p_0(1-p_0)}{0.975(n-1)}}), \hspace{85pt}(4.3) \nonumber
+\end{align}
+
+#(4.3)+1
+p_{12} + 1.96\sqrt{\frac{p_{12}(1-p_{12})}{n_1 n_2}} < \mathrm{min}(p_1,p_2)
+
+#(4.4)
+p>p_{12} + 1.96\sqrt{\frac{p_{12}(1-p_{12})}{n_1 n_2}}. \hspace{100pt}(4.4)
+
+#(4.5)
+LD(T) = \frac{2}{n(n-1)}\sum_{v \in T}\sum_{i,j \in v, i \ne j}((a_{ij}-p_v)\delta_{ij}^{(v)}+(p_v-a_{ij})(1-\delta_{ij}^{(v)})), \hspace{20pt}(4.5)
+
+#(4.6)
+C^{(v)}=A^{(v)}-p_v(J_{n_v}-I_{n_v}), \hspace{120pt}(4.6)
+
+#(4.7)
+\Delta LD = \frac{1}{n-1}\sum_{i \ne j, i,j \in v}((a_{ij}-p_v)\delta_{ij}^{(v)}+(p_v-a_{ij})(1-\dlta_{ij}^{(v)})) \hspace{35pt}(4.7)
+
+#(4.7)+ algorithm input
+\textbf{Input: }  \text{ network }G \text{ and binary tree }T \text{ with one node }G\text{ as root}
+
+#(4.7) + algorithm name
+\mathrm{DivideIntoTwo}(G):
+
+#(4.7) + step 1
+\text{(1) compute network size }n_G \text{ and observed Clique Score }p_G^{(0)}
+
+#（4.7）+ step 2
+\text{(2) choose } p_G := p_G^{(0)}-2.02 \sqrt{\frac{p_G^{(0)}(1-p_G^{(0)})}{0.975(n_G-1)}} 
+
+#(4.7) + step 3
+\text{(3) compute Local Clique Matrix }C^{(G)}=A^{(G)}-p_G(J_{n_G}-I_{n_G})
+
+#(4.7) + step 4
+\text{(4) compute the eigenvector }s \text{  of }C^{(G)} \text{ with largest eigenvalue}
+
+#(4.7) + step 5
+\text{(5) split }G \text{ into }G_1,G_2 \text{ by the sign of }s
+
+#(4.7) + step 6
+\text{(6) compute }\Delta LD \text{ from above split of }G
+
+#(4.7) + step 7
+\text{(7) } \textbf{if } \Delta LD>0
+
+#(4.7) + step 8
+\text{(8)} \hspace{25pt} \text{add }G_1 \text{ as left child of }G \text{ in binary tree } T 
+
+#(4.7) + step 9
+\text{(9)} \hspace{25pt} \mathrm{DivideIntoTwo}(G_1)
+
+#(4.7) + step 10
+\text{(10)} \hspace{20pt} \text{add }G_2 \text{ as right child of }G \text{ in binary tree } T 
+
+#(4.7) + step 11
+\text{(11)} \hspace{20pt} \mathrm{DivideIntoTwo}(G_2) 
+
+#(4.8) + output
+\textbf{Output: } \text{binary tree }T. 
+
+
+
+
+

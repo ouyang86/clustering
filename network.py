@@ -303,8 +303,8 @@ class Clustering(object):
     We can specify the path
     
     """
-    def plot_network(self, title, membership=None, outfile=None,
-                     width=600, height=600):
+    def plot_network(self, title='Network', membership=None, 
+                     outfile=None, width=900, height=600):
         if self.edgelist is None:
             self.edgelist = self.get_edgelist()
         if self.g is None:
@@ -680,14 +680,46 @@ def read_mcmc(infile, delimiter=','):
             row += 1
     return np.array(result)
     
+
+#get the cluster membership by Bayesian method
+dolphin = read_mcmc('dolphin_cluster.csv')
+
+#get the cluster membership by betweenness method
+dolphin_bet = np.zeros(62, dtype=int)
+check_set = set([0,2,10,28,30,42,47])
+for i in xrange(62):
+    if i in check_set:
+        dolphin_bet[i] = (dolphin[i]+1) % 2
+    else:
+        dolphin_bet[i] = dolphin[i]
+
+
+#making plot of Bayesian network clustering
+net.plot_network(title='Bayesian Dolphin Network Clustering',
+                 membership = dolphin, outfile='graph/dolphin_bayes.png',
+                 width=900, height=600)
+
+
+#making plot of Betweenness network clustering
+net.plot_network(title='Betweenness Dolphin Network Clustering',
+                 membership = dolphin_bet, outfile='graph/dolphin_bet.png',
+                 width=900, height=600)
+
+
     
-size0 = np.array([100])
+size0 = np.array([40])
 prob0 = np.array([[0.1]])
 se_testing(size0, prob0, 'auto', 100)
+aa, ii = simulate(size0, prob0)
+net = Clustering(aa)
+net.mod_dfs()
+net.plot_network(title='Modularity-based Clustering on network from G(40, 0.1)')
+
 
 ss = size0[1:]
 pp = prob0[1:,1:]
 se_testing(ss, pp, 0.24, 100)
+
 
 
 
@@ -728,18 +760,37 @@ prob3[9,9] = 0.7
 nmi_testing(size3, prob3, 'auto', 5)
 nmi_testing(size3, prob3, 0.06, 1)
 
+
 size4 = np.array([100, 20, 20])
-prob4 = np.array([[0.2, 0.05, 0.05],
+prob4 = np.array([[0.15, 0.01, 0.01],
+                  [0.01, 0.8, 0.02],
+                  [0.01, 0.02, 0.8]])
+
+
+
+
+size5 = np.array([100, 20, 20])
+prob5 = np.array([[0.2, 0.05, 0.05],
                   [0.05, 0.6, 0.12],
                   [0.05, 0.12, 0.6]])
-se_testing(size4, prob4, 'modularity', 100) 
+se_testing(size5, prob5, 'modularity', 100) 
 
-size5 = np.array([32, 32, 32, 32])
-prob5 = np.array([[0.33, 0.05, 0.05, 0.05],
-                  [0.05, 0.33, 0.05, 0.05],
-                  [0.05, 0.05, 0.33, 0.05],
-                  [0.05, 0.05, 0.05, 0.33]])
-nmi_testing(size5, prob5, 'modularity', 100)
+
+size6 = np.array([40,40,40])
+prob6 = np.array([[0.2, 0.01, 0.01],
+                  [0.01, 0.2, 0.01],
+                  [0.01, 0.01, 0.2]])
+nmi_testing(size, prob, 'auto', 100)
+
+
+
+
+#size6 = np.array([32, 32, 32, 32])
+#prob6 = np.array([[0.33, 0.05, 0.05, 0.05],
+#                  [0.05, 0.33, 0.05, 0.05],
+#                  [0.05, 0.05, 0.33, 0.05],
+#                  [0.05, 0.05, 0.05, 0.33]])
+#nmi_testing(size6, prob6, 'modularity', 100)
 
 
 c = np.zeros((120, 120))
